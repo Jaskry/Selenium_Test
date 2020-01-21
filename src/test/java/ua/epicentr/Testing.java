@@ -138,6 +138,7 @@ public class Testing {
         driver.quit();
     }
 
+
     private boolean isElementExists(By cssSelector) {
         return driver.findElements(cssSelector).size() > 0;
     }
