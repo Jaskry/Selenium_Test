@@ -15,7 +15,7 @@ public class Testing {
     private List<WebElement> webElements;
     private List<String> linkCard;
 
-    private int countItem = 3;                               // number check card
+    private int countItem = 3;                           // number check card
     private final int PAGE_TEST_TWO = 2;               // number of pages to check for test 2
     private final int PAGE_TEST_THREE = 3;      // number of pages to check for test 3
 
@@ -67,7 +67,7 @@ public class Testing {
 
         for (int i = 1; i <= PAGE_TEST_TWO; i++) {
             int cardGetPrice = 0, cardNumber = 0;
-            cardGetPrice = getWebElements(By.cssSelector(".product-Wrap [title~=грн]")).size();
+            cardGetPrice = getWebElements(By.cssSelector(".product-Wrap .card__price p[title*=\"грн\"]")).size();
             cardNumber = getWebElements(By.cssSelector(".product-Wrap .card__info")).size();
 
             if(cardGetPrice == cardNumber){
@@ -112,14 +112,16 @@ public class Testing {
         Collections.shuffle(webElements);
 
         for(int i = 0; i < 10;i++){
-            float currentPrice, newPrice;
-            int oldPrice, percent;
+            float currentPrice, newPrice,oldPrice;
+            int  percent, substringIndex, substringFromIndex;
 
+            substringIndex = webElements.get(i).findElement(By.cssSelector(".card__info .action")).getText().indexOf('-');
+            substringFromIndex = webElements.get(i).findElement(By.cssSelector(".card__info .action")).getText().indexOf('%');
 
             String nameCard = webElements.get(i).findElement(By.cssSelector(".nc")).getText();
             currentPrice = Float.parseFloat((webElements.get(i).findElement(By.cssSelector(".card__price-sum")).getText().replaceAll("грн","")));
-            oldPrice = Integer.parseInt(webElements.get(i).findElement(By.cssSelector(".card__price-sum--old")).getText());
-            percent = Integer.parseInt(webElements.get(i).findElement(By.cssSelector(".card__info .action")).getText().substring(6,9));
+            oldPrice = Float.parseFloat(webElements.get(i).findElement(By.cssSelector(".card__price-sum--old")).getText());
+            percent = Integer.parseInt(webElements.get(i).findElement(By.cssSelector(".card__info .action")).getText().substring(substringIndex,substringFromIndex));
             newPrice = (float) (oldPrice + (oldPrice * (percent * 1.00 / 100)));
             try {
                 Assert.assertEquals(currentPrice, newPrice);
@@ -128,12 +130,8 @@ public class Testing {
                 System.out.println("фактическая цена: " + currentPrice + "\t ожидаемая цена: " + newPrice );
             }
         }
-
-
-
-
-
     }
+
     @AfterSuite()
     public void afterTest() {
         driver.close();
@@ -165,7 +163,7 @@ public class Testing {
 
 }
 
-//    @Test()  //Test #3
+//    @Test()  //Test #2 Variant 2
 //    public void secondTest() {
 //        homePage();
 //        driver.findElement(By.linkText("Перфораторы")).click();
