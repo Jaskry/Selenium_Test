@@ -1,6 +1,7 @@
 package ua.epicentr;
 
 
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -112,8 +113,8 @@ public class Testing {
         Collections.shuffle(webElements);
 
         for(int i = 0; i < 10;i++){
-            float currentPrice, newPrice,oldPrice;
-            int  percent, substringIndex, substringFromIndex;
+            float currentPrice, newPrice, oldPrice, percent;
+            int substringIndex, substringFromIndex;
 
             substringIndex = webElements.get(i).findElement(By.cssSelector(".card__info .action")).getText().indexOf('-');
             substringFromIndex = webElements.get(i).findElement(By.cssSelector(".card__info .action")).getText().indexOf('%');
@@ -122,7 +123,9 @@ public class Testing {
             currentPrice = Float.parseFloat((webElements.get(i).findElement(By.cssSelector(".card__price-sum")).getText().replaceAll("грн","")));
             oldPrice = Float.parseFloat(webElements.get(i).findElement(By.cssSelector(".card__price-sum--old")).getText());
             percent = Integer.parseInt(webElements.get(i).findElement(By.cssSelector(".card__info .action")).getText().substring(substringIndex,substringFromIndex));
-            newPrice = (float) (oldPrice + (oldPrice * (percent * 1.00 / 100)));
+            percent = (oldPrice * percent ) / 100;
+            newPrice = (float) (Math.round((oldPrice + percent) * 10.0) / 10.0);
+
             try {
                 Assert.assertEquals(currentPrice, newPrice);
             } catch (AssertionError e){
@@ -137,7 +140,6 @@ public class Testing {
         driver.close();
         driver.quit();
     }
-
 
     private boolean isElementExists(By cssSelector) {
         return driver.findElements(cssSelector).size() > 0;
